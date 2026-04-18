@@ -30,4 +30,4 @@ def startup():
 
 @app.get("/")
 def root():
-    return {"message": "Engagement Platform API is running"}
+    return {"message": "Engagement Platform API is running", "version": "1.0.0", "status": "healthy"}
