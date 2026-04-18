@@ -4,14 +4,16 @@ from datetime import datetime, timezone
 
 
 def get_last_synced_at():
-    db = SessionLocal()
+    import backend.database as db_module
+    db = db_module.SessionLocal()
     log = db.query(ETLAuditLog).order_by(ETLAuditLog.ran_at.desc()).first()
     db.close()
     return log.last_synced_at if log else datetime(2000, 1, 1, tzinfo=timezone.utc)
 
 
 def extract_data(last_synced_at: datetime):
-    db = SessionLocal()
+    import backend.database as db_module
+    db = db_module.SessionLocal()
     users = db.execute(text(
         "SELECT id, username, email, created_at FROM users WHERE created_at > :ts"
     ), {"ts": last_synced_at}).fetchall()

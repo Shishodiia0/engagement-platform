@@ -54,7 +54,7 @@ def test_transform_events_none_content_id():
 
 def test_write_audit_log_success():
     mock_db = MagicMock()
-    with patch("etl.audit.SessionLocal", return_value=mock_db):
+    with patch("backend.database.SessionLocal", return_value=mock_db):
         write_audit_log(datetime.now(timezone.utc), 100, "success")
         assert mock_db.add.called
         assert mock_db.commit.called
@@ -63,7 +63,7 @@ def test_write_audit_log_success():
 
 def test_write_audit_log_failure_status():
     mock_db = MagicMock()
-    with patch("etl.audit.SessionLocal", return_value=mock_db):
+    with patch("backend.database.SessionLocal", return_value=mock_db):
         write_audit_log(datetime.now(timezone.utc), 0, "failed: connection error")
         call_args = mock_db.add.call_args[0][0]
         assert "failed" in call_args.status
@@ -74,7 +74,7 @@ def test_write_audit_log_failure_status():
 def test_get_last_synced_at_no_logs():
     mock_db = MagicMock()
     mock_db.query.return_value.order_by.return_value.first.return_value = None
-    with patch("etl.extract.SessionLocal", return_value=mock_db):
+    with patch("backend.database.SessionLocal", return_value=mock_db):
         from etl.extract import get_last_synced_at
         result = get_last_synced_at()
         assert result.year == 2000
@@ -86,7 +86,7 @@ def test_get_last_synced_at_with_log():
     mock_log = MagicMock()
     mock_log.last_synced_at = expected
     mock_db.query.return_value.order_by.return_value.first.return_value = mock_log
-    with patch("etl.extract.SessionLocal", return_value=mock_db):
+    with patch("backend.database.SessionLocal", return_value=mock_db):
         from etl.extract import get_last_synced_at
         result = get_last_synced_at()
         assert result == expected

@@ -81,7 +81,8 @@ def user_growth(days: int = 30, _: int = Depends(decode_token)):
 
 @router.get("/etl-status")
 def etl_status(_: int = Depends(decode_token)):
-    db = SessionLocal()
+    import backend.database as db_module
+    db = db_module.SessionLocal()
     log = db.query(ETLAuditLog).order_by(ETLAuditLog.ran_at.desc()).first()
     db.close()
     if not log:

@@ -1,11 +1,28 @@
 from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, ForeignKey
 from sqlalchemy.orm import declarative_base, sessionmaker
 from datetime import datetime, timezone
-from backend.config import DATABASE_URL
+import os
 
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(bind=engine)
 Base = declarative_base()
+
+
+def get_engine():
+    from backend.config import DATABASE_URL
+    return create_engine(DATABASE_URL)
+
+
+def get_session_local():
+    return sessionmaker(bind=get_engine())
+
+
+# Only create real engine if not testing
+if os.getenv("TESTING") != "true":
+    from backend.config import DATABASE_URL
+    engine = create_engine(DATABASE_URL)
+    SessionLocal = sessionmaker(bind=engine)
+else:
+    engine = None
+    SessionLocal = None
 
 
 class User(Base):
