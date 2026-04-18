@@ -4,15 +4,15 @@ import pandas as pd
 import plotly.express as px
 
 
-def show(headers):
+def show(headers, API_URL):
     st.title("📈 Engagement Trends")
     st.markdown("---")
 
     days = st.selectbox("📅 Date Range", [7, 30, 60, 90], index=1, format_func=lambda x: f"Last {x} days")
 
     try:
-        dau = requests.get(f"http://localhost:8000/analytics/dau?days={days}", headers=headers, timeout=10).json()
-        growth = requests.get(f"http://localhost:8000/analytics/user-growth?days={days}", headers=headers, timeout=10).json()
+        dau = requests.get(f"{API_URL}/analytics/dau?days={days}", headers=headers, timeout=10).json()
+        growth = requests.get(f"{API_URL}/analytics/user-growth?days={days}", headers=headers, timeout=10).json()
     except requests.exceptions.ConnectionError:
         st.error("❌ Cannot connect to backend.")
         return

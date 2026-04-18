@@ -1,4 +1,9 @@
 import streamlit as st
+import requests
+import os
+import sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from config import API_URL
 
 st.set_page_config(
     page_title="Engagement Analytics Platform",
@@ -6,14 +11,12 @@ st.set_page_config(
     layout="wide"
 )
 
-# Session state for auth token
 if "token" not in st.session_state:
     st.session_state.token = None
 
 if st.session_state.token is None:
     st.title("📊 Engagement Analytics Platform")
 
-    import requests
     tab1, tab2 = st.tabs(["Login", "Register"])
 
     with tab1:
@@ -23,14 +26,14 @@ if st.session_state.token is None:
             submitted = st.form_submit_button("Login")
         if submitted:
             try:
-                res = requests.post("http://localhost:8000/auth/login", json={"email": email, "password": password}, timeout=5)
+                res = requests.post(f"{API_URL}/auth/login", json={"email": email, "password": password}, timeout=5)
                 if res.status_code == 200:
                     st.session_state.token = res.json()["access_token"]
                     st.rerun()
                 else:
                     st.error("Invalid email or password.")
             except requests.exceptions.ConnectionError:
-                st.error("❌ Cannot connect to backend. Make sure FastAPI is running.")
+                st.error("❌ Cannot connect to backend.")
 
     with tab2:
         with st.form("register_form"):
@@ -40,13 +43,13 @@ if st.session_state.token is None:
             reg_submitted = st.form_submit_button("Register")
         if reg_submitted:
             try:
-                res = requests.post("http://localhost:8000/auth/register", json={"username": new_username, "email": new_email, "password": new_password}, timeout=5)
+                res = requests.post(f"{API_URL}/auth/register", json={"username": new_username, "email": new_email, "password": new_password}, timeout=5)
                 if res.status_code == 201:
                     st.success("✅ Registered successfully! Please login.")
                 else:
                     st.error(res.json().get("detail", "Registration failed."))
             except requests.exceptions.ConnectionError:
-                st.error("❌ Cannot connect to backend. Make sure FastAPI is running.")
+                st.error("❌ Cannot connect to backend.")
 else:
     st.sidebar.title("📊 Analytics Platform")
     st.sidebar.markdown("---")
@@ -61,16 +64,16 @@ else:
 
     if page == "Overview":
         from views.overview import show
-        show(headers)
+        show(headers, API_URL)
     elif page == "Engagement Trends":
         from views.trends import show
-        show(headers)
+        show(headers, API_URL)
     elif page == "Event Breakdown":
         from views.events import show
-        show(headers)
+        show(headers, API_URL)
     elif page == "Content Popularity":
         from views.content import show
-        show(headers)
+        show(headers, API_URL)
     elif page == "ETL Status":
         from views.etl_status import show
-        show(headers)
+        show(headers, API_URL)

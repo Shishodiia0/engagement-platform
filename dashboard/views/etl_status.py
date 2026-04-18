@@ -2,12 +2,12 @@ import streamlit as st
 import requests
 
 
-def show(headers):
+def show(headers, API_URL):
     st.title("🔄 ETL Pipeline Status")
     st.markdown("---")
 
     try:
-        data = requests.get("http://localhost:8000/analytics/etl-status", headers=headers, timeout=5).json()
+        data = requests.get(f"{API_URL}/analytics/etl-status", headers=headers, timeout=5).json()
     except requests.exceptions.ConnectionError:
         st.error("❌ Cannot connect to backend.")
         return
@@ -28,17 +28,16 @@ def show(headers):
 
     st.markdown("---")
     st.subheader("⚡ Manual ETL Trigger")
-    st.caption("Sync data from PostgreSQL to Snowflake right now without waiting.")
+    st.caption("Sync data from PostgreSQL to Snowflake right now.")
     if st.button("🔁 Sync Now"):
         with st.spinner("Running ETL pipeline..."):
             try:
-                res = requests.post("http://localhost:8000/etl/trigger", headers=headers, timeout=120)
+                res = requests.post(f"{API_URL}/etl/trigger", headers=headers, timeout=120)
                 if res.status_code == 200:
-                    result = res.json()
-                    st.success(f"✅ ETL completed! Rows synced: {result.get('rows_synced', 0)}")
+                    st.success(f"✅ ETL completed! Rows synced: {res.json().get('rows_synced', 0)}")
                 else:
                     st.error("❌ ETL trigger failed.")
             except requests.exceptions.ConnectionError:
                 st.error("❌ Cannot connect to backend.")
             except requests.exceptions.Timeout:
-                st.warning("⏳ ETL is taking longer than expected. Check the scheduler terminal.")
+                st.warning("⏳ ETL is taking longer than expected.")
