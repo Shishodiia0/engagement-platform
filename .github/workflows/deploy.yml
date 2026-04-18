@@ -18,6 +18,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install bcrypt==4.0.1
+          pip install pytest httpx pytest-asyncio
           pip install -r requirements.txt
 
       - name: Run tests
