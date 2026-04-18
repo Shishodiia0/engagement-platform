@@ -25,7 +25,9 @@ app.include_router(etl_router)
 
 @app.on_event("startup")
 def startup():
-    init_db()
+    import os
+    if os.getenv("TESTING") != "true":
+        init_db()
 
 
 @app.get("/")

@@ -23,6 +23,7 @@ jobs:
 
       - name: Run tests
         env:
+          TESTING: "true"
           PG_HOST: localhost
           PG_PORT: 5432
           PG_DATABASE: test_db
