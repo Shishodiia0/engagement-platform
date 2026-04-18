@@ -6,4 +6,9 @@ __pycache__/
 .DS_Store
 test.db
 benchmark.py
-*.md
+PRESENTATION.md
+PROJECT_REPORT.md
+RESEARCH_PAPER.md
+SYNOPSIS.md
+WORK_PROGRESS.md
+VIVA_PREPARATION.md
