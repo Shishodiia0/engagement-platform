@@ -1,0 +1,58 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install bcrypt==4.0.1
+          pip install -r requirements.txt
+
+      - name: Run tests
+        env:
+          PG_HOST: localhost
+          PG_PORT: 5432
+          PG_DATABASE: test_db
+          PG_USER: postgres
+          PG_PASSWORD: postgres
+          SF_ACCOUNT: test
+          SF_USER: test
+          SF_PASSWORD: test
+          SF_WAREHOUSE: test
+          SF_DATABASE: test
+          SF_SCHEMA: test
+          JWT_SECRET: test_secret_key
+          JWT_ALGORITHM: HS256
+          JWT_EXPIRY_MINUTES: 60
+          ETL_INTERVAL_MINUTES: 10
+        run: python -m pytest tests/ -v
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd engagement_platform
+            git pull origin main
+            docker-compose up -d --build
+            docker-compose ps
