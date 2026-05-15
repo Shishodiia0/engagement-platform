@@ -3,8 +3,8 @@
 A scalable full-stack analytics platform that tracks user engagement events in real time, stores transactional data in PostgreSQL, and syncs it to Snowflake for analytical processing via an incremental ETL pipeline.
 
 **Live Dashboard:** https://engagement-platform.streamlit.app
-**API:** http://98.93.13.233
-**API Docs:** http://98.93.13.233/docs
+**API:** http://52.23.184.120
+**API Docs:** http://52.23.184.120/docs
 
 ---
 
